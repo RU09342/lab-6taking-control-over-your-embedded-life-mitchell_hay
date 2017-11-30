@@ -1,16 +1,16 @@
 # Lab 6: "High Power" Control
-For starters, you will not be dealing with anything that is truly "high power". Instead, what I am considering "high power" is anything with the potential to damage or fry your microcontrollers if you were to drive them directly. The idea behind this part of the lab is to learn how not only to drive things that may require a high voltage or high current, but how to then protect your microcontroller from them.
+## Shani Thapa, Mitchell Hay
+* Populated README on 11/21
 
-## Switching
-Most of you have used one of the types of switching circuits to control the RGB LEDs. For this part of the lab, you need to focus on the different types of switching circuits along with the differences in inductive and resistive loads.
+### Relay Switching 
+The Relay used for this lab was the MAD-12V-C, automotive relay. It required 12V to operate. The relay drew around 9.6-9.8V and went down as the frequency was increased. The current draw increased when the frequency went down ranging from 90mA-130mA from 2Hz-0.6Hz. Once the frequency was over 100Hz the switching became unstable and eventually stops working. 
 
-### Relays
-A relay is a electro-mechanical system which can open and close a switch based on an input. 
-![Relay](https://www.phidgets.com/docs/images/1/1d/3051_1_Relay_Diagram.jpg)
-These are extremely useful in situations where large amounts of current need to flow, such as in automotive applications, but they do have their limits. For starters, since the actuation process requires a constant current, sometimes this can be too much for your processor to handle. Second, a lot of these relays require higher than 3.3V, which limits how you can actually turn these things on and off. Using the MSP430G2553, control the state of a relay to drive a power resistor with +12V. Your README for this part should include a screenshot of the output of your MSP and the voltage across the resistor. Try to figure out the switching speed limitations of the relay experimentally.
+### Mosfet Switching 
+We had to build Low Side and a High Side using an NMOS and a PMOS. The circuit is very simple for both with some minor differences. The LSS uses an NMOS with the load connected to the Drain of the mosfet. Meanwhile, the HSS uses a PMOS with the load also connected to Drain. The gate on both are connected to the micro-contorller. Then the source is connected to ground, and some resisters are placed to limit current. The schematics are below. 
 
-### MOSFET Switching
-The MOSFET switch is a very simple circuit which can be used in a multitude of applications. One of the most important features of the MOSFET Switch is the near zero current it takes to switch the MOSFET from an on to an off state. There are two main architectures, low-side and high-side switch, each requiring a different type of MOSFET. Using the MSP430G2553, drive a power resistor with +12V in the same fashion as the relay. Obtain an MSP430G2553 voltage output along with the voltage through the power resistor. Try to figure out the switching speed limitations of the MOSFET experimentally.
+![Alt text](https://user-images.githubusercontent.com/31711430/33403750-9410471c-d52f-11e7-9760-08b14539a200.PNG)
 
-## Deliverables
-Along with what was asked in each part, you will need to utilize the DMM to determine what the current draw from each switch is and if that falls into spec with the Microcontroller. You need to then come up with the best configuration you can think of using to control something that requires large current, but also protects your processor from damage. The reason I am asking you to do this with just the G2553 is: A) The code is just generating a square wave, and B) this part of the lab runs the highest chance of damaging your parts and we have spare G2553's just in case.
+#### Examples
+Below are the gifs of the mosfet swiching actuated through LEDs.
+
+![Alt text](https://user-images.githubusercontent.com/31711430/33402326-34781f8c-d52a-11e7-8809-f35d6e29d003.gif)
