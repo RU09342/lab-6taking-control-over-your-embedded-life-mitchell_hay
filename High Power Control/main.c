@@ -1,3 +1,10 @@
+/*
+ * Mitchell Hay and Shani Thapa
+ * RU 09342 - Lab 6
+ * High Power Control
+ * MSP430F5529
+ */
+
 #include <msp430.h>
 
 int main(void)
