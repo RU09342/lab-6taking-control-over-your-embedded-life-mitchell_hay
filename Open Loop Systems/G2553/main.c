@@ -1,36 +1,37 @@
+/*
+ * Mitchell Hay and Shani Thapa
+ * RU 09342 - Lab 6
+ * Open Loop System
+ * MSP430G2553
+ */
+
 #include <msp430.h>
-int lny=3.45
 
-
-unsigned volatile int tempIn;
-unsigned volatile int tempOut;
 unsigned volatile int fan;
 
 void Clock();
 void GPIO();
 void UART();
 void ADC();
-float ADCtoTemp(int adc);
-int TempToPWM(float t);
-void TempCtrl(int temp);
 
 int main(void)
 {
 	WDTCTL = WDTPW + WDTHOLD; // Stop the Watch dog
 
+	// Initialization
 	Clock();
 	GPIO();
 	UART();
+	ADC();
 
 	while (1)
 	{
 	    ADC10CTL0 |= ENC + ADC10SC;             // Sampling and conversion start
 	    __bis_SR_register(CPUOFF + GIE);        // LPM0, ADC10_ISR will force exit
-	    TempCtrl(tempIn);
 	}
 }
 
-/*
+
 // Transmit Interrupt
 #pragma vector = USCIAB0TX_VECTOR
 __interrupt void TransmitInterrupt(void) {
@@ -40,10 +41,11 @@ __interrupt void TransmitInterrupt(void) {
 // Receive Interrupt
 #pragma vector = USCIAB0RX_VECTOR
 __interrupt void ReceiveInterrupt(void) {
-	UCA0RXBUF = tempIn;
+	// Read in PWM, set it to CCR1
+	fan = UCA0RXBUF;
+	CCR1 = 10*fan;
 	IFG2 &= ~UCA0RXIFG; // Clear RX flag
 }
-*/
 
 
 // ADC10 interrupt service routine
@@ -59,7 +61,7 @@ void __attribute__ ((interrupt(ADC10_VECTOR))) ADC10_ISR (void)
   __bic_SR_register_on_exit(CPUOFF);        // Clear CPUOFF bit from 0(SR)
 }
 
-
+// Clock init
 void Clock()
 {
 	// Configure Clocks
@@ -72,6 +74,7 @@ void Clock()
 	DCOCTL = CALDCO_1MHZ;   // Set DCO step + modulation
 }
 
+// GPIO init
 void GPIO()
 {
 	P1SEL |= BIT1 + BIT2;  // P1.1 UCA0RXD input
@@ -79,12 +82,13 @@ void GPIO()
 	P1DIR |= BIT2;         // P1.2 PWM Output
 	P1SEL |= BIT2;         // P1.2 for TA0.1 output
 	P1SEL2 = 0;			   //Select default function for P1.2
-	CCR0 = 1023;        // PWM Period
+	CCR0 = 1000;        // PWM Period
 	CCTL1 = OUTMOD_7;      // CCR1 reset/set
 	CCR1 = 0;            // CCR1 PWM duty cycle
 	TACTL = TASSEL_2 + MC_1;    // SMCLK, up mode
 }
 
+// UART init
 void UART()
 {
 	UCA0CTL1 |= UCSSEL_2 + UCSWRST;  // USCI Clock = SMCLK,USCI_A0 disabled
@@ -96,29 +100,10 @@ void UART()
 	IE2 |= UCA0RXIE;                  // Enable the Receive  interrupt
 }
 
+// ADC init
 void ADC()
 {
 	ADC10CTL0 = ADC10SHT_2 + ADC10ON + ADC10IE; // ADC10ON, interrupt enabled
 	ADC10CTL1 = INCH_1;                       // input A1
 	ADC10AE0 |= 0x02;                         // PA.1 ADC option select
-}
-
-float ADCtoTemp(int adc)
-{
-	return ((float)adc/310.0)*100;
-}
-
-
-int TempToPWM(float t)
-{
-	float a = 36.55;
-	float b = -0.0444;
-	float c = 27.83;
-	float d = 0.001309;
-	return (lny/(a*b+c*d)) * 10;
-}
-
-void TempCtrl(int temp)
-{
-	CCR0 = temp;
 }
