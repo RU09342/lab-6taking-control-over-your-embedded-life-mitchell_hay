@@ -1,6 +1,8 @@
-#include <msp430.h>
-
- /*
+/*
+ * Mitchell Hay and Shani Thapa
+ * RU09342 - 4
+ * Lab 6 - Precision Control PWM
+ *
  * LSB - P8.2
  * P3.7
  * P4.0
@@ -9,7 +11,9 @@
  * P1.3
  * P1.4
  * MSB - P1.5
- * */
+ */
+
+#include <msp430.h>
 
 volatile unsigned int voltage;
 
@@ -17,12 +21,13 @@ void DAC(int v);
 
 int main(void)
 {
-	WDTCTL = WDTPW + WDTHOLD;                 // Stop WDT
-	P1DIR |= BIT0;                            // P1.0 output
-	TA0CCTL0 = CCIE;                             // CCR0 interrupt enabled
-	TA0CTL = TASSEL_1 + MC_1;           // ACLK/8, upmode
-	TA0CCR0 = 80;                              // 1.25 Hz
-
+	WDTCTL = WDTPW + WDTHOLD;               // Stop WDT
+	P1DIR |= BIT0;                          // P1.0 output
+	TA0CCTL0 = CCIE;                        // CCR0 interrupt enabled
+	TA0CTL = TASSEL_1 + MC_1;           	// ACLK/8, upmode
+	TA0CCR0 = 80;                           // 1.25 Hz
+	
+	// Set up each bit for R2R ladder
 	P8DIR |= BIT2;
 	P3DIR |= BIT7;
 	P4DIR |= BIT0;
@@ -32,6 +37,7 @@ int main(void)
 	P1DIR |= BIT4;
 	P1DIR |= BIT5;
 
+	// Initialize all of the outputs to off
 	P8OUT &= ~BIT2;
 	P3OUT &= ~BIT7;
 	P4OUT &= ~BIT0;
@@ -54,10 +60,11 @@ void __attribute__ ((interrupt(TIMER0_A0_VECTOR))) Timer_A (void)
 #error Compiler not supported!
 #endif
 {
-  DAC(voltage);
-  voltage++;
+	DAC(voltage);		// Use timer to set R2R ladder
+  	voltage++;		// Increment
 }
 
+// Function to make ramp wave
 void DAC(int v)
 {
 	if (v & 0b00000001)
@@ -93,5 +100,4 @@ void DAC(int v)
 		P1OUT &= ~BIT4;
 	if (!(v & 0b10000000))
 		P1OUT &= ~BIT5;
-
 }
