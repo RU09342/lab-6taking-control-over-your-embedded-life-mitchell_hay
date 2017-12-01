@@ -2,7 +2,7 @@
 # Shani Thapa, Mitchell Hay
 
 ## Board
-We choose the MSP430G2552 for this lab. The main reason we choose this board was because it was the only board that can have its IC replaced and that was a huge benefit since we were working with voltages and currents far above the board's capacity to handle. Also, it is the cheapest option so it would be the most cost-effective if we could properly use the G2 for this lab. 
+The board chosen for this lab was the MSP430G2552. The main reason this board was chosen was because it is the only board that can have its integrated circuit replaced. This is a huge benefit since the lab would consist of voltages and currents far above the board's capabilities. Also, it is the least expensive option, so should the board fail, it would not be a costly fix.
 
 ## Schematics 
 As seen in the schamtic below, there were five components to the open loop system. The first was the MSP430, which was used to read in temperature values, send out a PWM signal to a fan, and to send data to a computer program. The other component was the fan, which was used to cool off the system. The system to be cooled was a voltage regulator pressed against a temperature sensor. The voltage regulator and fan were powered by a 20 V input, and the voltage regulator was connected to a 100 ohm power resistor. The last component was the computer, which was connected to the MSP430 via a UART connection. It was used to send and receive values to and from the microcontroller.
