@@ -19,6 +19,6 @@ Below are the gifs of the mosfet swiching actuated through LEDs.
 ![Alt text](https://user-images.githubusercontent.com/31711430/33402326-34781f8c-d52a-11e7-8809-f35d6e29d003.gif)
 
 ## Tasks
-[x] Write a program for the MSP430 to generate a square wave
-[x] Implement a switching circuit using a relay
-[x] Implement a switching circuit using MOSFETs
+* [x] Write a program for the MSP430 to generate a square wave
+* [x] Implement a switching circuit using a relay
+* [x] Implement a switching circuit using MOSFETs
