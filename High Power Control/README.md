@@ -3,7 +3,20 @@
 * Populated README on 11/21
 
 ### Software Dependencies
+The code was extremely simple. We set the a timer's CCR0 to a period, then simply have CCR1 to have half that value to get a PWM on one of the GPIO pins. Then that can be output to the circuit for switching.  
+```
+{
+  WDTCTL = WDTPW + WDTHOLD;                 // Stop WDT
+  P1DIR |= BIT2+BIT3;                       // P1.2 and P1.3 output
+  P1SEL |= BIT2+BIT3;                       // P1.2 and P1.3 options select
+  TA0CCR0 = 64000;                          // PWM Period
+  TA0CCTL1 = OUTMOD_7;                      // CCR1 reset/set
+  TA0CCR1 = 32000;                            // CCR1 PWM duty cycle
+  TA0CTL = TASSEL_1 + MC_1 + TACLR;         // ACLK, up mode, clear TAR
 
+  __bis_SR_register(LPM0_bits);             // Enter LPM0
+}
+```
 
 ### Relay Switching 
 The Relay used for this lab was the MAD-12V-C, automotive relay. It required 12V to operate. The relay drew around 9.6-9.8V and went down as the frequency was increased. The current draw increased when the frequency went down ranging from 90mA-130mA from 2Hz-0.6Hz. Once the frequency was over 100Hz the switching became unstable and eventually stops working. 
