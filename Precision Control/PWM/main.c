@@ -1,3 +1,9 @@
+/*
+ * Mitchell Hay and Shani Thapa
+ * RU09342 - 4
+ * Lab 6 - Precision Control PWM
+ */
+
 #include <msp430.h>
 volatile unsigned int rx;
 
@@ -9,13 +15,13 @@ void main(void)
 	TA0CTL = TASSEL_2 + MC_1 + TACLR;         	// SMCLK, up mode, clear TAR
 
 	// PWM Setup
-	P1DIR |= BIT2;								// Set up Pins 1.2,3, and 4 as outputs
-	P1SEL |= BIT2;								// Set Pins 1.2,3, and 4 to Timer A0 CCRx
+	P1DIR |= BIT2;					// Set up Pin 1.2 as output
+	P1SEL |= BIT2;					// Set Pin 1.2 to CCR1
 	TA0CCTL1 = OUTMOD_7;                      	// CCR1 reset/set
-	TA0CCR1 = 127;                            	// CCR1 PWM duty cycle, red LED
+	TA0CCR1 = 127;                            	// CCR1 PWM duty cycle
 
 	// UART Setup
-	P3SEL |= BIT3 + BIT4;                       // P3.3,4 = USCI_A0 TXD/RXD
+	P3SEL |= BIT3 + BIT4;                       	// P3.3,4 = USCI_A0 TXD/RXD
 	UCA0CTL1 |= UCSWRST;                      	// **Put state machine in reset**
 	UCA0CTL1 |= UCSSEL_1;                     	// ACLK
 	UCA0BR0 = 3;                        		// 32726 MHz/3 = 9600 (see User's Guide)
@@ -24,7 +30,7 @@ void main(void)
 	UCA0CTL1 &= ~UCSWRST;                   	// **Initialize USCI state machine**
 	UCA0IE |= UCRXIE;                         	// Enable USCI_A0 RX interrupt
 
-	__enable_interrupt();						// Enable Interrupts
+	__enable_interrupt();				// Enable Interrupts
 	__bis_SR_register(LPM0 + GIE);       		// Enter LPM0, interrupts enabled
 }
 
@@ -41,10 +47,10 @@ void __attribute__ ((interrupt(USCI_A0_VECTOR))) USCI_A0_ISR (void)
 {
 	switch (__even_in_range(UCA0IV, 4)) {
 	case 0:
-		break;                             		// Vector 0 - no interrupt
+		break;                             	// Vector 0 - no interrupt
 	case 2:                                   	// Vector 2 - RXIFG
 		while (!(UCA0IFG & UCTXIFG));
-		rx = UCA0RXBUF;							// Hold received character
+		rx = UCA0RXBUF;				// Hold received character
 		TA0CCR1 = rx;
 		break;
 	case 4:
@@ -53,4 +59,3 @@ void __attribute__ ((interrupt(USCI_A0_VECTOR))) USCI_A0_ISR (void)
 		break;
 	}
 }
-
