@@ -8,6 +8,7 @@
 #include <msp430.h>
 
 unsigned volatile int fan;
+unsigned volatile int adcIn;
 
 void Clock();
 void GPIO();
@@ -26,8 +27,9 @@ int main(void)
 
 	while (1)
 	{
-	    ADC10CTL0 |= ENC + ADC10SC;             // Sampling and conversion start
-	    __bis_SR_register(CPUOFF + GIE);        // LPM0, ADC10_ISR will force exit
+	    	ADC10CTL0 |= ENC + ADC10SC;             // Sampling and conversion start
+	    	__bis_SR_register(CPUOFF + GIE);        // LPM0, ADC10_ISR will force exit
+		adcIn = ADC10MEM;
 	}
 }
 
@@ -35,7 +37,16 @@ int main(void)
 // Transmit Interrupt
 #pragma vector = USCIAB0TX_VECTOR
 __interrupt void TransmitInterrupt(void) {
-	tempOut = UCA0TXBUF;
+	# Send out data one digit at a time
+	while(adcIn != 0)
+	{
+		while (!(UCA0IFG & UCTXIFG));
+		UCA0TXBUF = adcIn % 10;
+		adcIn /= 10;
+	}
+	# Send out newline character to indicate ADC reading is done
+	while (!(UCA0IFG & UCTXIFG));
+	UCA0TXBUF = '\n';
 }
 
 // Receive Interrupt
