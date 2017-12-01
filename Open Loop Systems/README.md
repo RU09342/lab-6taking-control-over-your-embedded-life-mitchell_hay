@@ -23,4 +23,14 @@ We started off by testing the maximum temperature that the voltage regulator cou
 
 ![Alt text](https://user-images.githubusercontent.com/31711430/33098433-6de47e50-cedb-11e7-8536-5813dd48f80b.jpg) 
 ### Code 
-  
+The code was simply a PWM output sent to a pin, and PWM value was calculated by the MatLab equation obtained. 
+```
+int TempToPWM(float t)
+{
+	float a = 36.55;
+	float b = -0.0444;
+	float c = 27.83;
+	float d = 0.001309;
+	return (lny/(a*b+c*d)) * 10;
+}
+```
