@@ -24,14 +24,13 @@ We started off by testing the maximum temperature that the voltage regulator cou
 ![Alt text](https://user-images.githubusercontent.com/31711430/33098433-6de47e50-cedb-11e7-8536-5813dd48f80b.jpg) 
 
 ## Code 
-The code was simply a PWM output sent to a pin, and PWM value was calculated by the MatLab equation obtained. 
+There was two programs written; one for the MSP430 and one for the computer. The computer ran a Python script to read in and send out values from the microcontroller. The PySerial library was used, and the following code block was written to open communication to the board:
+```python
+ser = serial.Serial(port = 'COM6', baudrate = 9600)
 ```
-int TempToPWM(float t)
-{
-	float a = 36.55;
-	float b = -0.0444;
-	float c = 27.83;
-	float d = 0.001309;
-	return (lny/(a*b+c*d)) * 10;
-}
-```
+The program consists of a loop that will always run unless the user enters the word, "exit". The input from the user is converted to a byte string before being sent out, so that the MSP430 can understand the input. The program then prints out the values to the console and runs the loop again.
+
+## Tasks
+* [x] Implement serial communication using Python and MSP430
+* [x] Control fan with PWM signal
+* [x] Read in temperatures using LM35 temperature sensor
