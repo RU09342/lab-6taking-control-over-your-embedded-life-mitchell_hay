@@ -1,6 +1,5 @@
 # Lab 6: "High Power" Control
 ## Shani Thapa, Mitchell Hay
-* Populated README on 11/21
 
 ### Software Dependencies
 The code was extremely simple. We set the a timer's CCR0 to a period, then simply have CCR1 to have half that value to get a PWM on one of the GPIO pins. Then that can be output to the circuit for switching.  
